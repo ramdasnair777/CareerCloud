@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -9,7 +10,7 @@ using CareerCloud.Pocos;
 
 namespace CareerCloud.ADODataAccessLayer
 {
-    class SecurityRoleRepository : IDataRepository<SecurityRolePoco>
+    class SecurityRoleRepository : BaseADO,IDataRepository<SecurityRolePoco>
     {
         public void Add(params SecurityRolePoco[] items)
         {
@@ -38,7 +39,19 @@ namespace CareerCloud.ADODataAccessLayer
 
         public void Remove(params SecurityRolePoco[] items)
         {
-            throw new NotImplementedException();
+            using (_connection)
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = _connection;
+                foreach (SecurityRolePoco poco in items)
+                {
+                    cmd.CommandText = @"Delete from Security_Role where id = @id";
+                    cmd.Parameters.AddWithValue("@id", poco.Id);
+                    _connection.Open();
+                    cmd.ExecuteNonQuery();
+                    _connection.Close();
+                }
+            }
         }
 
         public void Update(params SecurityRolePoco[] items)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ using CareerCloud.Pocos;
 
 namespace CareerCloud.ADODataAccessLayer
 {
-    class SystemCountryCodeRepository : IDataRepository<SystemCountryCodePoco>
+    class SystemCountryCodeRepository :BaseADO, IDataRepository<SystemCountryCodePoco>
     {
         public void Add(params SystemCountryCodePoco[] items)
         {
@@ -37,7 +38,19 @@ namespace CareerCloud.ADODataAccessLayer
 
         public void Remove(params SystemCountryCodePoco[] items)
         {
-            throw new NotImplementedException();
+            using (_connection)
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = _connection;
+                foreach (SystemCountryCodePoco poco in items)
+                {
+                    cmd.CommandText = @"Delete from System_Country_Codes where Code = @Code";
+                    cmd.Parameters.AddWithValue("@Code", poco.Code);
+                    _connection.Open();
+                    cmd.ExecuteNonQuery();
+                    _connection.Close();
+                }
+            }
         }
 
         public void Update(params SystemCountryCodePoco[] items)
