@@ -14,7 +14,26 @@ namespace CareerCloud.ADODataAccessLayer
     {
         public void Add(params SecurityRolePoco[] items)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = new SqlConnection(_connString))
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = connection;
+                int rowsAffected = 0;
+
+                foreach (SecurityRolePoco poco in items)
+                {
+                    cmd.CommandText = @"INSERT INTO SecurityRolePoco (Id, Role, Is_Inactive) values
+										(@Id, @Role, @Is_Inactive)";
+                    cmd.Parameters.AddWithValue("@Id", poco.Id);
+                    cmd.Parameters.AddWithValue("@Role", poco.Role);
+                    cmd.Parameters.AddWithValue("@Is_Inactive", poco.IsInactive);
+            
+
+                    connection.Open();
+                    rowsAffected += cmd.ExecuteNonQuery();
+                    connection.Close();
+                }
+            }
         }
 
         public void CallStoredProc(string name, params Tuple<string, string>[] parameters)

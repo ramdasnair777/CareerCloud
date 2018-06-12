@@ -14,7 +14,27 @@ namespace CareerCloud.ADODataAccessLayer
     {
         public void Add(params SecurityLoginsLogPoco[] items)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = new SqlConnection(_connString))
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = connection;
+                int rowsAffected = 0;
+
+                foreach (SecurityLoginsLogPoco poco in items)
+                {
+                    cmd.CommandText = @"INSERT INTO Security_Logins_Log (Id, Login, Source_IP, Logon_Date,Is_Succesful) values
+										(@Id, @Login, @Source_IP, @Logon_Date, @Is_Succesful)";
+                    cmd.Parameters.AddWithValue("@Id", poco.Id);
+                    cmd.Parameters.AddWithValue("@Login", poco.Login);
+                    cmd.Parameters.AddWithValue("@Source_IP", poco.SourceIP);
+                    cmd.Parameters.AddWithValue("@Is_Succesful", poco.IsSuccesful);
+                    cmd.Parameters.AddWithValue("@Logon_Date", poco.LogonDate);
+
+                    connection.Open();
+                    rowsAffected += cmd.ExecuteNonQuery();
+                    connection.Close();
+                }
+            }
         }
 
         public void CallStoredProc(string name, params Tuple<string, string>[] parameters)

@@ -13,7 +13,26 @@ namespace CareerCloud.ADODataAccessLayer
     {
         public void Add(params SystemLanguageCodePoco[] items)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = new SqlConnection(_connString))
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = connection;
+                int rowsAffected = 0;
+
+                foreach (SystemLanguageCodePoco poco in items)
+                {
+                    cmd.CommandText = @"INSERT INTO System_Language_Code (LanguageID, Name, Native_Name) values
+										(@LanguageID, @Name, @Native_Name)";
+                    cmd.Parameters.AddWithValue("@LanguageID", poco.LanguageID);
+                    cmd.Parameters.AddWithValue("@Name", poco.Name);
+                    cmd.Parameters.AddWithValue("@Native_Name", poco.NativeName);
+          
+
+                    connection.Open();
+                    rowsAffected += cmd.ExecuteNonQuery();
+                    connection.Close();
+                }
+            }
         }
 
         public void CallStoredProc(string name, params Tuple<string, string>[] parameters)
