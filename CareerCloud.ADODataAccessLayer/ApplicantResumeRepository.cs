@@ -9,11 +9,30 @@ using CareerCloud.Pocos;
 
 namespace CareerCloud.ADODataAccessLayer
 {
-    class ApplicantResumeRepository : BaseADO, IDataRepository<ApplicantResumePoco>
+    public class ApplicantResumeRepository : BaseADO, IDataRepository<ApplicantResumePoco>
     {
         public void Add(params ApplicantResumePoco[] items)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = new SqlConnection(_connString))
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = connection;
+                int rowsAffected = 0;
+
+                foreach (ApplicantResumePoco poco in items)
+                {
+                    cmd.CommandText = @"INSERT INTO Applicant_Resumes (Id, Applicant, Major, Certificate_Diploma, Start_Date, Completion_Date, Completion_Percent) values
+                                    (@Id, @Applicant, @Resume, @Last_updated)";
+                    cmd.Parameters.AddWithValue("@Id", poco.Id);
+                    cmd.Parameters.AddWithValue("@Applicant", poco.Applicant);
+                    cmd.Parameters.AddWithValue("@Last_Updated", poco.LastUpdated);
+                    cmd.Parameters.AddWithValue("@Resume", poco.Resume);
+            
+                    connection.Open();
+                    rowsAffected += cmd.ExecuteNonQuery();
+                    connection.Close();
+                }
+            }
         }
 
         public void CallStoredProc(string name, params Tuple<string, string>[] parameters)
@@ -38,17 +57,17 @@ namespace CareerCloud.ADODataAccessLayer
 
         public void Remove(params ApplicantResumePoco[] items)
         {
-            using (_connection)
+            using (SqlConnection connection = new SqlConnection(_connString))
             {
                 SqlCommand cmd = new SqlCommand();
-                cmd.Connection = _connection;
+                cmd.Connection = connection;
                 foreach (ApplicantResumePoco poco in items)
                 {
                     cmd.CommandText = @"Delete from Applicant_Resumes where id = @id";
                     cmd.Parameters.AddWithValue("@id", poco.Id);
-                    _connection.Open();
+                    connection.Open();
                     cmd.ExecuteNonQuery();
-                    _connection.Close();
+                    connection.Close();
                 }
             }
         }

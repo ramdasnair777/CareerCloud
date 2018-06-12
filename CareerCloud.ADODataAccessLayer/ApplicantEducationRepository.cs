@@ -11,14 +11,14 @@ using CareerCloud.Pocos;
 
 namespace CareerCloud.ADODataAccessLayer
 {
-    class ApplicantEducationRepository : BaseADO, IDataRepository<ApplicantEducationPoco>
+    public class ApplicantEducationRepository : BaseADO, IDataRepository<ApplicantEducationPoco>
     {
         public void Add(params ApplicantEducationPoco[] items)
         {
-            using (_connection)
+            using (SqlConnection connection = new SqlConnection(_connString))
             {
                 SqlCommand cmd = new SqlCommand();
-                cmd.Connection = _connection;
+                cmd.Connection = connection;
                 int rowsAffected = 0;
 
                 foreach (ApplicantEducationPoco poco in items)
@@ -33,9 +33,9 @@ namespace CareerCloud.ADODataAccessLayer
                     cmd.Parameters.AddWithValue("@Completion_Date", poco.CompletionDate);
                     cmd.Parameters.AddWithValue("@Completion_Percent", poco.CompletionPercent);
 
-                    _connection.Open();
+                    connection.Open();
                     rowsAffected += cmd.ExecuteNonQuery();
-                    _connection.Close();
+                    connection.Close();
                 }
             }
         }
@@ -48,13 +48,13 @@ namespace CareerCloud.ADODataAccessLayer
         public IList<ApplicantEducationPoco> GetAll(params Expression<Func<ApplicantEducationPoco, object>>[] navigationProperties)
         {
             ApplicantEducationPoco[] pocos = new ApplicantEducationPoco[1000];
-            using (_connection)
+            using (SqlConnection connection = new SqlConnection(_connString))
             {
                 SqlCommand cmd = new SqlCommand();
-                cmd.Connection = _connection;
+                cmd.Connection = connection;
                 cmd.CommandText = "select * from Applicant_Educations";
 
-                _connection.Open();
+                connection.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
                 
                 int pos = 0;
@@ -74,9 +74,9 @@ namespace CareerCloud.ADODataAccessLayer
                     pocos[pos] = poco;
                     pos++;
                 }
-                _connection.Close();
+                connection.Close();
             }
-            return pocos;
+             return pocos.Where(p => p != null).ToList(); ;
         }
 
         public IList<ApplicantEducationPoco> GetList(Expression<Func<ApplicantEducationPoco, bool>> where, params Expression<Func<ApplicantEducationPoco, object>>[] navigationProperties)
@@ -92,17 +92,17 @@ namespace CareerCloud.ADODataAccessLayer
 
         public void Remove(params ApplicantEducationPoco[] items)
         {
-            using (_connection)
+            using (SqlConnection connection = new SqlConnection(_connString))
             {
                 SqlCommand cmd = new SqlCommand();
-                cmd.Connection = _connection;
+                cmd.Connection = connection;
                 foreach (ApplicantEducationPoco poco in items)
                 {
                     cmd.CommandText = @"Delete from Applicant_Educations where id = @id";
                     cmd.Parameters.AddWithValue("@id", poco.Id);
-                    _connection.Open();
+                    connection.Open();
                     cmd.ExecuteNonQuery();
-                    _connection.Close();
+                    connection.Close();
                 }
             }
 
@@ -110,18 +110,18 @@ namespace CareerCloud.ADODataAccessLayer
 
         public void Update(params ApplicantEducationPoco[] items)
         {
-            using (_connection)
+            using (SqlConnection connection = new SqlConnection(_connString))
             {
                 SqlCommand cmd = new SqlCommand();
-                cmd.Connection = _connection;
+                cmd.Connection = connection;
                 foreach (ApplicantEducationPoco poco in items)
                 {
                     cmd.CommandText = @"Update Applicant_Educations set 
-                                        Applicant = @Applicant
-                                        Major=@Major
-                                        Certificate_Diploma=@Certificate_Diploma
-                                        Start_date=@Start_date
-                                        Completion_Date=@Completion_Date
+                                        Applicant = @Applicant,
+                                        Major=@Major,
+                                        Certificate_Diploma=@Certificate_Diploma,
+                                        Start_date=@Start_date,
+                                        Completion_Date=@Completion_Date,
                                         Completion_Percent=@Completion_Percent
                                         where id=@id";
                     cmd.Parameters.AddWithValue("@Id", poco.Id);
@@ -131,9 +131,9 @@ namespace CareerCloud.ADODataAccessLayer
                     cmd.Parameters.AddWithValue("@Start_date", poco.StartDate);
                     cmd.Parameters.AddWithValue("@Completion_Date", poco.CompletionDate);
                     cmd.Parameters.AddWithValue("@Completion_Percent", poco.CompletionPercent);
-                    _connection.Open();
+                    connection.Open();
                     cmd.ExecuteNonQuery();
-                    _connection.Close();
+                    connection.Close();
                 }
             }
         }

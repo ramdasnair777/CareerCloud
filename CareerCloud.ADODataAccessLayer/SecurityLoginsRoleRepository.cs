@@ -10,7 +10,7 @@ using CareerCloud.Pocos;
 
 namespace CareerCloud.ADODataAccessLayer
 {
-    class SecurityLoginsRoleRepository :BaseADO, IDataRepository<SecurityLoginsRolePoco>
+    public class SecurityLoginsRoleRepository :BaseADO, IDataRepository<SecurityLoginsRolePoco>
     {
         public void Add(params SecurityLoginsRolePoco[] items)
         {
@@ -39,17 +39,17 @@ namespace CareerCloud.ADODataAccessLayer
 
         public void Remove(params SecurityLoginsRolePoco[] items)
         {
-            using (_connection)
+            using (SqlConnection connection = new SqlConnection(_connString))
             {
                 SqlCommand cmd = new SqlCommand();
-                cmd.Connection = _connection;
+                cmd.Connection = connection;
                 foreach (SecurityLoginsRolePoco poco in items)
                 {
                     cmd.CommandText = @"Delete from Security_Logins_Roles where id = @id";
                     cmd.Parameters.AddWithValue("@id", poco.Id);
-                    _connection.Open();
+                    connection.Open();
                     cmd.ExecuteNonQuery();
-                    _connection.Close();
+                    connection.Close();
                 }
             }
         }

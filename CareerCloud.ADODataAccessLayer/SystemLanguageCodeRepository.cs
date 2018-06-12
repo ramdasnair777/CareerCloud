@@ -9,7 +9,7 @@ using CareerCloud.Pocos;
 
 namespace CareerCloud.ADODataAccessLayer
 {
-    class SystemLanguageCodeRepository :BaseADO IDataRepository<SystemLanguageCodePoco>
+    public class SystemLanguageCodeRepository :BaseADO, IDataRepository<SystemLanguageCodePoco>
     {
         public void Add(params SystemLanguageCodePoco[] items)
         {
@@ -38,17 +38,17 @@ namespace CareerCloud.ADODataAccessLayer
 
         public void Remove(params SystemLanguageCodePoco[] items)
         {
-            using (_connection)
+            using (SqlConnection connection = new SqlConnection(_connString))
             {
                 SqlCommand cmd = new SqlCommand();
-                cmd.Connection = _connection;
+                cmd.Connection = connection;
                 foreach (SystemLanguageCodePoco poco in items)
                 {
                     cmd.CommandText = @"Delete from System_Country_Codes where LanguageID = @LanguageID";
                     cmd.Parameters.AddWithValue("@LanguageID", poco.LanguageID);
-                    _connection.Open();
+                    connection.Open();
                     cmd.ExecuteNonQuery();
-                    _connection.Close();
+                    connection.Close();
                 }
             }
         }
