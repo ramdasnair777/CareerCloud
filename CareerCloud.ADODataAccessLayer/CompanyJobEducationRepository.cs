@@ -26,8 +26,8 @@ namespace CareerCloud.ADODataAccessLayer
 										(@Id, @Job, @Major, @Importance)";
                     cmd.Parameters.AddWithValue("@Id", poco.Id);
                     cmd.Parameters.AddWithValue("@Job", poco.Job);
-                    cmd.Parameters.AddWithValue("@Importance", poco.Major);
-                    cmd.Parameters.AddWithValue("@Certificate_Diploma", poco.Importance);
+                    cmd.Parameters.AddWithValue("@Major", poco.Major);
+                    cmd.Parameters.AddWithValue("@Importance", poco.Importance);
 
                     connection.Open();
                     rowsAffected += cmd.ExecuteNonQuery();
@@ -43,7 +43,32 @@ namespace CareerCloud.ADODataAccessLayer
 
         public IList<CompanyJobEducationPoco> GetAll(params Expression<Func<CompanyJobEducationPoco, object>>[] navigationProperties)
         {
-            throw new NotImplementedException();
+            CompanyJobEducationPoco[] pocos = new CompanyJobEducationPoco[10000];
+            using (SqlConnection connection = new SqlConnection(_connString))
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = connection;
+                cmd.CommandText = "select * from Company_Job_Educations";
+
+                connection.Open();
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                int pos = 0;
+
+                while (reader.Read())
+                {
+                    CompanyJobEducationPoco poco = new CompanyJobEducationPoco();
+                    poco.Id = reader.GetGuid(0);
+                    poco.Job = reader.GetGuid(1);
+                    poco.Major = reader.GetString(2);
+                    poco.Importance = reader.GetInt16(3);
+                    poco.TimeStamp = (byte[])reader[4];
+                    pocos[pos] = poco;
+                    pos++;
+                }
+                connection.Close();
+            }
+            return pocos.Where(p => p != null).ToList();
         }
 
         public IList<CompanyJobEducationPoco> GetList(Expression<Func<CompanyJobEducationPoco, bool>> where, params Expression<Func<CompanyJobEducationPoco, object>>[] navigationProperties)
@@ -53,7 +78,8 @@ namespace CareerCloud.ADODataAccessLayer
 
         public CompanyJobEducationPoco GetSingle(Expression<Func<CompanyJobEducationPoco, bool>> where, params Expression<Func<CompanyJobEducationPoco, object>>[] navigationProperties)
         {
-            throw new NotImplementedException();
+            IQueryable<CompanyJobEducationPoco> pocos = GetAll().AsQueryable();
+            return pocos.Where(where).FirstOrDefault();
         }
 
         public void Remove(params CompanyJobEducationPoco[] items)
@@ -75,7 +101,27 @@ namespace CareerCloud.ADODataAccessLayer
 
         public void Update(params CompanyJobEducationPoco[] items)
         {
-            throw new NotImplementedException();
+            using (SqlConnection connection = new SqlConnection(_connString))
+            {
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = connection;
+                int rowsAffected = 0;
+
+                foreach (CompanyJobEducationPoco poco in items)
+                {
+                    cmd.CommandText = @"update Company_Job_Educations set Job=@Job, 
+                                    Major=@Major, Importance=@Importance where id = @Id";
+                    cmd.Parameters.AddWithValue("@Id", poco.Id);
+                    cmd.Parameters.AddWithValue("@Job", poco.Job);
+                    cmd.Parameters.AddWithValue("@Major", poco.Major);
+                    cmd.Parameters.AddWithValue("@Importance", poco.Importance);
+
+
+                    connection.Open();
+                    rowsAffected += cmd.ExecuteNonQuery();
+                    connection.Close();
+                }
+            }
         }
     }
 }
