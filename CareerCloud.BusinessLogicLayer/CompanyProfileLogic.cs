@@ -24,8 +24,8 @@ namespace CareerCloud.BusinessLogicLayer
                     exceptions.Add(new ValidationException(600, $"Cannot be empty or less than 3" +
                       $"characters -{poco.Id}"));
                 }
-                else if (!poco.CompanyWebsite.EndsWith(".ca") || !poco.CompanyWebsite.EndsWith(".com") ||
-                    !poco.CompanyWebsite.EndsWith(".biz"))
+                else if (!(poco.CompanyWebsite.EndsWith(".ca") || poco.CompanyWebsite.EndsWith(".com") ||
+                    poco.CompanyWebsite.EndsWith(".biz")))
                 {
                     exceptions.Add(new ValidationException(600, $"Invalid web suffix " +
                         $"or empty -{poco.Id}"));
