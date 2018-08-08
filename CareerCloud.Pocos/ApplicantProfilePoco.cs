@@ -28,9 +28,18 @@ namespace CareerCloud.Pocos
         [Column("Zip_Postal_Code")]
         public string PostalCode { get; set; }
         [Column("Time_Stamp")]
+        [Timestamp]
         public byte[] TimeStamp { get; set; }
         public Guid Login { get; set; }
         public string Currency { get; set; }
+        public virtual SecurityLoginPoco SecurityLogins { get; set; }
+        public virtual SystemCountryCodePoco SystemCountryCode { get; set; }
+        public virtual ICollection<ApplicantEducationPoco> ApplicantEducations { get; set; }
+        public virtual ICollection<ApplicantResumePoco> ApplicantResumes { get; set; }
+        public virtual ICollection<ApplicantSkillPoco> ApplicantSkills { get; set; }
+        public virtual ICollection<ApplicantWorkHistoryPoco> ApplicantWorkHistorys { get; set; }
+        public virtual ICollection<ApplicantJobApplicationPoco> ApplicantJobApplication { get; set; }
+
 
     }
 }

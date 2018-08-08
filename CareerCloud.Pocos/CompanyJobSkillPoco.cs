@@ -16,10 +16,11 @@ namespace CareerCloud.Pocos
         [Column("Skill_Level")]
         public string SkillLevel { get; set; }
         [Column("Time_Stamp")]
+        [Timestamp]
         public byte[] TimeStamp { get; set; }
         public string Skill { get; set; }
         public int Importance { get; set; }
         public Guid Job { get; set; }
-
+        public virtual CompanyJobPoco CompanyJobs { get; set; }
     }
 }
