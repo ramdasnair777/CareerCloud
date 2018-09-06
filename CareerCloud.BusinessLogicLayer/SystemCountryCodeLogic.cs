@@ -23,6 +23,7 @@ namespace CareerCloud.BusinessLogicLayer
             return _repository.GetAll().ToList();
         }
 
+
         protected void Verify(SystemCountryCodePoco[] pocos)
         {
             List<ValidationException> exceptions = new List<ValidationException>();
@@ -54,13 +55,17 @@ namespace CareerCloud.BusinessLogicLayer
         public void Update(SystemCountryCodePoco[] pocos)
         {
             Verify(pocos);
-            _repository.Add(pocos);
+            _repository.Update(pocos);
         }
     
 
     public void Delete(SystemCountryCodePoco[] pocos)
         {
             _repository.Remove(pocos);
+        }
+    public SystemCountryCodePoco Get(string code)
+        {
+            return _repository.GetSingle(c => c.Code == code);
         }
     }
 }

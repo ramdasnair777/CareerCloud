@@ -76,7 +76,7 @@ namespace CareerCloud.BusinessLogicLayer
         public override void Update(CompanyProfilePoco[] pocos)
         {
             Verify(pocos);
-            base.Add(pocos);
+            base.Update(pocos);
         }
     }
 }

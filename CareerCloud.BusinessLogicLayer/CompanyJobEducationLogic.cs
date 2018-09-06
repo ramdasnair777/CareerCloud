@@ -52,7 +52,7 @@ namespace CareerCloud.BusinessLogicLayer
         public override void Update(CompanyJobEducationPoco[] pocos)
         {
             Verify(pocos);
-            base.Add(pocos);
+            base.Update(pocos);
         }
     }
 }
